@@ -6,12 +6,13 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase';
 import { useAddTeamMember } from '@/api/hook/useTeam';
+import type { TeamMember } from '@/interfaces/Team';
 
 type AddMemberModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   teamId: string;
-  onMemberAdded?: () => void;
+  onMemberAdded?: (member: TeamMember) => void;
 };
 
 export default function AddMemberModal({ open, onOpenChange, teamId, onMemberAdded }: AddMemberModalProps) {
@@ -39,13 +40,15 @@ export default function AddMemberModal({ open, onOpenChange, teamId, onMemberAdd
       const res = await addMember(teamId, email.trim(), token);
 
       if (res.success) {
+        console.log(res);
         toast.success('Member added successfully');
-        onMemberAdded?.();
+        onMemberAdded?.(res.data);
         reset();
         onOpenChange(false);
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to add member');
+      console.log(e);
     } finally {
       setLoading(false);
     }

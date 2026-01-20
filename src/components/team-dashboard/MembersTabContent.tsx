@@ -1,4 +1,4 @@
-import { Crown, Shield, MoreVertical, UserMinus, ChevronDown } from 'lucide-react';
+import { Crown, Shield, MoreVertical, UserMinus, ChevronDown, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useGetTeam, useRemoveTeamMember, useUpdateTeamMemberRole } from '@/api/hook/useTeam';
@@ -6,6 +6,8 @@ import { auth } from '@/lib/firebase';
 import { toast } from 'sonner';
 import type { TeamMember } from '@/interfaces/Team';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import AddMemberModal from '../AddMemberModal';
+import { useUserStore } from '@/store/userStore';
 
 const PAGE_SIZE = 5;
 
@@ -14,9 +16,12 @@ export const MembersTabContent = ({ teamId }: { teamId: string }) => {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const { user: loggedInUser } = useUserStore();
   const [loading, setLoading] = useState(false);
+  const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
   const { removeMember } = useRemoveTeamMember();
   const { updateMemberRole } = useUpdateTeamMemberRole();
+
   useEffect(() => {
     async function fetchMembers(currentOffset: number) {
       try {
@@ -133,9 +138,21 @@ export const MembersTabContent = ({ teamId }: { teamId: string }) => {
       </>
     );
   }
-
+  function onTeamMemberAdded(member: TeamMember) {
+    setMembers((prev) => [member, ...prev]);
+  }
+  // const canManageMembers = members.some((m) => (m.role === 'ADMIN' || m.role === 'MANAGER') && m.userId?._id === loggedInUser?._id);
+  // console.log(canManageMembers);
   return (
     <div className="space-y-4 max-w-3xl">
+      {members.some(
+        (m) => ((m.role === 'ADMIN' || m.role === 'MANAGER') && m.userId?._id && m.userId._id === loggedInUser?._id) || loggedInUser?.id,
+      ) && (
+        <Button variant="secondary" onClick={() => setAddMemberModalOpen(true)}>
+          <UserPlus /> Add member
+        </Button>
+      )}
+
       {members.map((m) => {
         const user = m.userId;
         const isAdmin = m.role === 'ADMIN';
@@ -188,7 +205,6 @@ export const MembersTabContent = ({ teamId }: { teamId: string }) => {
           </div>
         );
       })}
-
       {/* Pagination */}
       <div className="flex justify-between pt-2">
         <Button variant="outline" disabled={offset === 0 || loading} onClick={() => setOffset((p) => Math.max(0, p - PAGE_SIZE))}>
@@ -198,6 +214,12 @@ export const MembersTabContent = ({ teamId }: { teamId: string }) => {
           Next
         </Button>
       </div>
+      <AddMemberModal
+        open={addMemberModalOpen}
+        onOpenChange={setAddMemberModalOpen}
+        teamId={teamId}
+        onMemberAdded={(addedMember) => onTeamMemberAdded(addedMember)}
+      />
     </div>
   );
 };

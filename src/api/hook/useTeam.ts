@@ -73,10 +73,10 @@ export const useGetTeam = () => {
   };
 };
 export const useAddTeamMember = () => {
-  const addMember = useCallback(async (teamId: string, uid: string, token: string) => {
+  const addMember = useCallback(async (teamId: string, email: string, token: string) => {
     const response = await axios.post(
-      `/team/add-member`,
-      { teamId, uid },
+      `/team/add-member?teamId=${teamId}`,
+      { email },
       {
         headers: {
           Authorization: `Bearer ${token}`,
