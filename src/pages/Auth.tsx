@@ -45,7 +45,7 @@ const LoginForm = () => {
       const res = await login(email, password);
       if (res.status === 201 && res.data.success) {
         navigate('/home', { replace: true });
-        console.log(res.data);
+        console.log(res.data?.data);
         setUser(res.data.data);
         toast.success('User Logged in successfully');
       }

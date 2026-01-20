@@ -142,6 +142,7 @@ export default function ProjectTasks() {
     );
   }
   const headerRightAction = () => {
+    console.log(user);
     return (
       <div className="flex items-center gap-3">
         <div className="flex border rounded-lg overflow-hidden">
@@ -191,6 +192,14 @@ export default function ProjectTasks() {
       </div>
     );
   };
+
+  if (!teamId) {
+    return (
+      <div>
+        <p>Invalid team </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -282,6 +291,7 @@ export default function ProjectTasks() {
         onOpenChange={() => setOpenAddTask(false)}
         projectId={projectId}
         onTaskCreated={(task) => setTasks((prev) => [task, ...prev])}
+        teamId={teamId}
       />
     </div>
   );

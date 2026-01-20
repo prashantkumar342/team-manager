@@ -14,7 +14,7 @@ type AddTaskModalProps = {
   onOpenChange: (open: boolean) => void;
   projectId?: string;
   onTaskCreated: (task: Task) => void;
-  teamId?: string;
+  teamId: string;
 };
 
 export default function AddTaskModal({ open, onOpenChange, projectId, onTaskCreated, teamId }: AddTaskModalProps) {

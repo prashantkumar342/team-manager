@@ -22,7 +22,6 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [teamsLoading, setTeamsLoading] = useState(false);
-
   const [confirmModal, setConfirmModal] = useState(false);
   const [modalContent, setModalContent] = useState<{ title: string; description?: string }>({
     title: '',
