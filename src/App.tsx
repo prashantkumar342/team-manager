@@ -4,7 +4,6 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from './lib/firebase';
 
 import Auth from './pages/Auth';
-import StartWithTeam from './pages/StartWithTeam';
 import { useTeamStore } from './store/useTeams.store';
 import ConfirmModal from './components/ConfirmModal';
 import { useGetTeam } from './api/hook/useTeam';
@@ -20,7 +19,7 @@ import PageNotFound from './pages/PageNotFound';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [teamsLoading, setTeamsLoading] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
   const [modalContent, setModalContent] = useState<{ title: string; description?: string }>({
@@ -31,6 +30,7 @@ function App() {
   const addTeams = useTeamStore((s) => s.addTeams);
 
   useEffect(() => {
+    setLoading(true);
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser && firebaseUser.emailVerified ? firebaseUser : null);
       setLoading(false);
@@ -68,7 +68,7 @@ function App() {
     handleFetchTeams();
   }, [user, addTeams, getTeams]);
 
-  if (loading || teamsLoading) {
+  if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center">
         <Spinner />
@@ -85,15 +85,13 @@ function App() {
           <Route path="/" element={user ? <Navigate to="/home" replace /> : <Auth />} />
 
           <Route path="/home" element={user ? <HomeLayout /> : <Navigate to="/" replace />}>
-            <Route index element={<Home />} />
+            <Route index element={<Home teamLoading={teamsLoading} />} />
             <Route path="team/:id" element={<TeamDashboardLayout />}>
               <Route index element={<TeamDashboard />} />
               <Route path="project/:projectId" element={<ProjectTasks />} />
               <Route path="chat" element={<TeamChat />} />
             </Route>
           </Route>
-
-          <Route path="/start-with-team" element={user ? <StartWithTeam /> : <Navigate to="/" replace />} />
 
           <Route path="*" element={<PageNotFound />} />
         </Routes>

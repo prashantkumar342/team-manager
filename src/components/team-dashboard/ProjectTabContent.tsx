@@ -7,6 +7,25 @@ import { useProject } from '@/api/hook/useProject';
 import type { Project } from '@/interfaces/Project';
 import CreateProjectModal from '../CreateProjectModal';
 
+const ProjectsSkeleton = () => {
+  return Array.from({ length: 4 }).map((_, i) => (
+    <div key={i} className="group relative border-border bg-card border rounded-2xl p-5 skeleton">
+      <div className="flex items-center justify-between">
+        <div className="flex-1 space-y-2">
+          {/* Title */}
+          <div className="h-4 w-48 bg-slate-200 dark:bg-slate-800 rounded" />
+
+          {/* Updated time */}
+          <div className="h-3 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
+        </div>
+
+        {/* Open button */}
+        <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+      </div>
+    </div>
+  ));
+};
+
 type Props = {
   teamId: string;
   onOpen: (projectId: string) => void;
@@ -65,31 +84,36 @@ export const ProjectTabContent = ({ teamId, onOpen }: Props) => {
   return (
     <div className="space-y-3 max-w-4xl">
       {/* ================= PROJECT LIST ================= */}
-      {projects.map((project) => (
-        <div
-          key={project._id}
-          className="group relative border-border bg-card border rounded-2xl p-5 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all duration-300 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">{project.name}</h3>
+      {loading ? (
+        <ProjectsSkeleton />
+      ) : (
+        <>
+          {projects.map((project) => (
+            <div
+              key={project._id}
+              className="group relative border-border bg-card border rounded-2xl p-5 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1">{project.name}</h3>
 
-              {project.updatedAt && (
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <Clock className="h-3 w-3" />
-                  Updated {new Date(project.updatedAt).toLocaleDateString()}
+                  {project.updatedAt && (
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <Clock className="h-3 w-3" />
+                      Updated {new Date(project.updatedAt).toLocaleDateString()}
+                    </div>
+                  )}
                 </div>
-              )}
+
+                <Button size="sm" variant="outline" onClick={() => onOpen(project._id)} className="rounded-xl transition-all">
+                  Open
+                  <ArrowRight className="h-3 w-3 ml-1" />
+                </Button>
+              </div>
             </div>
-
-            <Button size="sm" variant="outline" onClick={() => onOpen(project._id)} className="rounded-xl transition-all">
-              Open
-              <ArrowRight className="h-3 w-3 ml-1" />
-            </Button>
-          </div>
-        </div>
-      ))}
-
+          ))}
+        </>
+      )}
       {/* ================= CREATE PROJECT ================= */}
       <button
         onClick={() => setCreateProjectModal(true)}

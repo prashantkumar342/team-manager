@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, User, UserPlus } from 'lucide-react';
-import TeamItem from '@/components/TeamItem';
+import TeamItem, { TeamItemSkeleton } from '@/components/TeamItem';
 import CreateTeamModal from '@/components/CreateTeamModal';
 import JoinTeamModal from '@/components/JoinTeamModal';
 import { useTeamStore } from '@/store/useTeams.store';
@@ -10,7 +10,7 @@ import StartWithTeam from './StartWithTeam';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 
-export default function Home() {
+export default function Home({ teamLoading }: { teamLoading: boolean }) {
   const [createTeamModal, setCreateTeamModal] = useState(false);
   const navigate = useNavigate();
   const teams = useTeamStore((s) => s.teams);
@@ -19,7 +19,7 @@ export default function Home() {
 
   const filteredTeams = teams.filter((team) => team.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  if (teams.length === 0) {
+  if (!teamLoading && teams.length === 0) {
     return <StartWithTeam />;
   }
 
@@ -61,9 +61,15 @@ export default function Home() {
               </div>
             ) : (
               <div className="space-y-2 sm:space-y-3">
-                {filteredTeams.map((team) => (
-                  <TeamItem key={team._id} team={team} onItemClick={(id: string) => navigate(`/home/team/${id}`)} />
-                ))}
+                {teamLoading ? (
+                  <TeamItemSkeleton />
+                ) : (
+                  <>
+                    {filteredTeams.map((team) => (
+                      <TeamItem key={team._id} team={team} onItemClick={(id: string) => navigate(`/home/team/${id}`)} />
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </div>

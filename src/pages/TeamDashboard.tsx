@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { Team } from '@/interfaces/Team';
 import { useUserStore } from '@/store/userStore';
 import { useTeamStore } from '@/store/useTeams.store';
-import { MessageCircle, UserPlus, FolderKanban, Users, Settings } from 'lucide-react';
+import { MessageCircle, FolderKanban, Users, Settings } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function TeamDashboard() {
@@ -23,11 +23,6 @@ export default function TeamDashboard() {
   const headerRightAction = () => {
     return (
       <>
-        {user?.id === team?.adminId && (
-          <Button size="icon" variant="outline">
-            <UserPlus className="h-4 w-4" />
-          </Button>
-        )}
         <Button size="icon" onClick={() => navigate(`/home/team/${teamId}/chat`)}>
           <MessageCircle className="h-4 w-4" />
         </Button>
