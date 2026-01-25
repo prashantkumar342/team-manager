@@ -1,5 +1,6 @@
 import { Edit3, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useGetTeam } from '@/api/hook/useTeam';
 import { toast } from 'sonner';
 import ConfirmModal from '../ConfirmModal';
@@ -43,24 +44,28 @@ export const SettingTabContent = ({
   return (
     <>
       <div className="space-y-4 max-w-2xl">
-        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-6">
-          <h3 className="font-semibold mb-4">Team Settings</h3>
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <h3 className="font-semibold mb-4">Team Settings</h3>
 
-          <Button variant="outline" className="w-full justify-start rounded-xl" onClick={() => setEditModal(true)}>
-            <Edit3 className="h-4 w-4 mr-2" />
-            Edit Team
-          </Button>
-        </div>
+            <Button variant="outline" className="w-full justify-start rounded-xl h-11" onClick={() => setEditModal(true)}>
+              <Edit3 className="h-4 w-4 mr-2" />
+              Edit Team
+            </Button>
+          </CardContent>
+        </Card>
 
-        <div className="bg-red-50 dark:bg-red-950/20 border rounded-2xl p-6">
-          <h3 className="font-semibold mb-2 text-red-600">Danger Zone</h3>
-          <p className="text-sm mb-4">Deleting a team is permanent and cannot be undone.</p>
+        <Card className="border-destructive/50 bg-destructive/5 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <h3 className="font-semibold mb-2 text-destructive">Danger Zone</h3>
+            <p className="text-sm mb-4 text-muted-foreground">Deleting a team is permanent and cannot be undone.</p>
 
-          <Button variant="destructive" className="w-full rounded-xl" onClick={() => setConfirmModal(true)}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete Team
-          </Button>
-        </div>
+            <Button variant="destructive" className="w-full rounded-xl h-11" onClick={() => setConfirmModal(true)}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Team
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <UpdateTeamModal

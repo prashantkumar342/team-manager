@@ -6,7 +6,8 @@ export type AuthUser = {
   _id: string;
   id: string;
   email: string;
-  name?: string;
+  name: string;
+  avatar?: string | null;
 };
 
 type UserState = {

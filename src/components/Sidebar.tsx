@@ -1,8 +1,7 @@
-import { Home, LogOut } from 'lucide-react';
+import { Home, LayoutDashboard } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -15,40 +14,57 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import axios from '@/lib/axios';
 import { Link } from 'react-router-dom';
+import { ProfileDropdown } from './ProfileDropdown';
+import { useUserStore } from '@/store/userStore';
+import { useConfirm } from '@/hook/useConfirm';
 
 export default function AppSidebar() {
-  const menuItems = [{ icon: Home, label: 'home', href: '/home' }];
-  const handleLogout = async () => {
-    try {
-      // Logout from Firebase
-      await signOut(auth);
+  const menuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+    { icon: Home, label: 'My Teams', href: '/home' },
+  ];
+  const { user } = useUserStore();
+  const confirm = useConfirm();
 
-      // Optional: tell backend to clear cookie
-      await axios.post('/auth/logout', {}, { withCredentials: true });
-      // console.log(await auth.currentUser?.getIdToken());
-    } catch (error) {
-      console.error('Logout failed', error);
+  const handleLogout = async () => {
+    const ok = await confirm({
+      title: 'Logout',
+      description: 'Are you sure you want to logout?',
+      confirmText: 'Yes, Logout',
+    });
+    if (!ok) {
+      return;
+    } else {
+      try {
+        await signOut(auth);
+        await axios.post('/auth/logout', {}, { withCredentials: true });
+      } catch (error) {
+        console.error('Logout failed', error);
+      }
     }
   };
-  return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-4">
-          <h2 className="text-xl font-bold">Team Manager</h2>
-        </div>
-      </SidebarHeader>
 
+  return (
+    <Sidebar className="bg-linear-to-b from-background to-muted/20 border-r border-border/50">
+      <SidebarHeader>
+        <ProfileDropdown user={user} onLogout={handleLogout} />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground font-semibold">Team Manager</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    className="rounded-md py-5 border border-border/50  backdrop-blur-sm  hover:shadow-md transition-all"
+                  >
                     <Link to={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
+                      <div className="p-1.5 rounded-md bg-primary/10">
+                        <item.icon className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="font-medium">{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -57,17 +73,6 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={() => handleLogout()}>
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
