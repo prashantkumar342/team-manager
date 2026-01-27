@@ -134,7 +134,12 @@ export function ChatboxDropdown() {
                 </AvatarFallback>
               </Avatar>
               <Card className="p-2 sm:p-3 bg-muted">
-                <p className="text-xs sm:text-sm">Thinking...</p>
+                {/*<p className="text-xs sm:text-sm">Thinking...</p>*/}
+                <div className="flex gap-1 bg-card">
+                  <span className="h-2 w-2 bg-card-foreground rounded-full animate-pulse"></span>
+                  <span className="h-2 w-2 bg-card-foreground rounded-full animate-pulse delay-150"></span>
+                  <span className="h-2 w-2 bg-card-foreground rounded-full animate-pulse delay-300"></span>
+                </div>
               </Card>
             </div>
           )}
@@ -146,13 +151,13 @@ export function ChatboxDropdown() {
       <Separator />
 
       {/* Input */}
-      <div className="p-3 sm:p-4">
+      <div className="p-3 sm:p-4 ">
         <div className="flex gap-2">
           <Input
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyUp={handleKeyPress}
             disabled={loading}
           />
           <Button size="icon" onClick={handleSend} disabled={!input.trim() || loading}>
